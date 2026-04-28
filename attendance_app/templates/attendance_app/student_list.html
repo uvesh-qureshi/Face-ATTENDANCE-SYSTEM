@@ -1,0 +1,71 @@
+{% extends 'attendance_app/base.html' %}
+{% block title %}Students - FaceAttend{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div class="page-header" style="margin:0">
+    <h1>👥 Students</h1>
+    <p>{{ students.count }} registered students</p>
+  </div>
+  <a href="{% url 'add_student' %}" class="btn btn-primary">➕ Add Student</a>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Department</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Face Ready</th>
+          <th>Total Present</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td>
+            <div class="student-info">
+              {% if s.photo %}
+              <img src="{{ s.photo.url }}" alt="{{ s.name }}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+              {% else %}
+              <div class="avatar">{{ s.name|first }}</div>
+              {% endif %}
+              <div>
+                <div class="name">{{ s.name }}</div>
+                <div class="id">{{ s.student_id }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ s.department|default:"-" }}</td>
+          <td style="font-size:13px;">{{ s.email|default:"-" }}</td>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:13px;">{{ s.phone|default:"-" }}</td>
+          <td>
+            {% if s.face_encoding %}
+            <span class="badge badge-present">✅ Ready</span>
+            {% else %}
+            <span class="badge badge-absent">❌ No Face</span>
+            {% endif %}
+          </td>
+          <td style="font-family:'JetBrains Mono',monospace;">{{ s.total_present }}</td>
+          <td>
+            <form method="post" action="{% url 'delete_student' s.pk %}"
+              onsubmit="return confirm('{{ s.name }} ko delete karo?')">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">🗑 Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:48px;">
+          Koi student register nahi hai.<br>
+          <a href="{% url 'add_student' %}" class="btn btn-primary" style="margin-top:12px;">➕ Add First Student</a>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

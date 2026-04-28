@@ -1,0 +1,124 @@
+{% extends 'attendance_app/base.html' %}
+{% block title %}Add Student - FaceAttend{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>➕ Student Register Karo</h1>
+  <p>Nayi student ki information aur face photo add karo</p>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h3 style="margin-bottom:20px;font-size:15px;">📝 Student Information</h3>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>Student ID *</label>
+        <input type="text" name="student_id" placeholder="e.g. STU001" required>
+      </div>
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" name="name" placeholder="e.g. Rahul Sharma" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="rahul@email.com">
+      </div>
+      <div class="form-group">
+        <label>Department</label>
+        <input type="text" name="department" placeholder="e.g. Computer Science" list="dept-list">
+        <datalist id="dept-list">
+          {% for d in departments %}<option value="{{ d }}">{% endfor %}
+          <option value="Computer Science">
+          <option value="Electronics">
+          <option value="Mechanical">
+          <option value="Civil">
+          <option value="MBA">
+        </datalist>
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" name="phone" placeholder="9876543210">
+      </div>
+      <div class="form-group">
+        <label>Face Photo *</label>
+        <div class="photo-drop" onclick="document.getElementById('photoInput').click()">
+          <div class="photo-drop-icon">📷</div>
+          <p>Photo click karo ya drag & drop karo</p>
+          <p style="font-size:12px;margin-top:4px;">(Clear front face photo use karo)</p>
+        </div>
+        <input type="file" id="photoInput" name="photo" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+        <div id="photoPreview" style="margin-top:12px;display:none;">
+          <img id="previewImg" style="width:100%;max-width:200px;border-radius:10px;border:2px solid var(--accent2);">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">
+        ✅ Register Student
+      </button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px;font-size:15px;">💡 Tips</h3>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="padding:14px;background:var(--bg3);border-radius:8px;">
+        <div style="font-size:20px;margin-bottom:6px;">📸</div>
+        <div style="font-weight:600;font-size:14px;">Achhi Photo Ke Liye</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;">
+          Achhi lighting me seedha face dikhao, sunglass ya mask mat pehno
+        </div>
+      </div>
+      <div style="padding:14px;background:var(--bg3);border-radius:8px;">
+        <div style="font-size:20px;margin-bottom:6px;">🆔</div>
+        <div style="font-weight:600;font-size:14px;">Student ID</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;">
+          Unique ID dalo jaise STU001, CS2024001 etc.
+        </div>
+      </div>
+      <div style="padding:14px;background:var(--bg3);border-radius:8px;">
+        <div style="font-size:20px;margin-bottom:6px;">⚙️</div>
+        <div style="font-weight:600;font-size:14px;">Face Recognition</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;">
+          System automatically face encode karega. Install karo:<br>
+          <code style="font-size:11px;color:var(--accent2);">pip install face_recognition opencv-python</code>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;padding:16px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);border-radius:8px;">
+      <div style="font-size:14px;font-weight:600;color:var(--accent2);margin-bottom:8px;">
+        📦 Install Requirements
+      </div>
+      <div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;line-height:1.8;">
+        pip install face_recognition<br>
+        pip install opencv-python<br>
+        pip install Pillow numpy
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function previewPhoto(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('previewImg').src = e.target.result;
+      document.getElementById('photoPreview').style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+
+const dropZone = document.querySelector('.photo-drop');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--accent2)'; });
+dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = 'var(--border)'; });
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.style.borderColor = 'var(--border)';
+  const input = document.getElementById('photoInput');
+  input.files = e.dataTransfer.files;
+  previewPhoto(input);
+});
+</script>
+{% endblock %}

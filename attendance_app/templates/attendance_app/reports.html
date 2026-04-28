@@ -1,0 +1,86 @@
+{% extends 'attendance_app/base.html' %}
+{% block title %}Reports - FaceAttend{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div class="page-header" style="margin:0">
+    <h1>📋 Reports</h1>
+    <p>Student-wise attendance summary</p>
+  </div>
+  <a href="{% url 'export_csv' %}?start={{ start_date }}&end={{ end_date }}" class="btn btn-success">⬇️ Export CSV</a>
+</div>
+
+<!-- Filter -->
+<div class="card" style="margin-bottom:20px;">
+  <form method="get" style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;">
+    <div class="form-group" style="margin:0;flex:1;min-width:140px;">
+      <label>Start Date</label>
+      <input type="date" name="start" value="{{ start_date }}">
+    </div>
+    <div class="form-group" style="margin:0;flex:1;min-width:140px;">
+      <label>End Date</label>
+      <input type="date" name="end" value="{{ end_date }}">
+    </div>
+    <div class="form-group" style="margin:0;flex:1;min-width:140px;">
+      <label>Department</label>
+      <select name="department">
+        <option value="">All Departments</option>
+        {% for d in departments %}
+        <option value="{{ d }}" {% if d == selected_dept %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">🔍 Filter</button>
+  </form>
+</div>
+
+<!-- Summary Table -->
+<div class="card">
+  <h3 style="margin-bottom:16px;font-size:15px;">📊 Student-wise Summary ({{ total_days }} days)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Department</th>
+          <th>Present</th>
+          <th>Late</th>
+          <th>Absent</th>
+          <th>Attendance %</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in summary %}
+        <tr>
+          <td>
+            <div class="student-info">
+              <div class="avatar">{{ item.student.name|first }}</div>
+              <div>
+                <div class="name">{{ item.student.name }}</div>
+                <div class="id">{{ item.student.student_id }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ item.student.department|default:"-" }}</td>
+          <td style="color:var(--accent3);font-weight:600;font-family:'JetBrains Mono',monospace;">{{ item.present }}</td>
+          <td style="color:var(--warn);font-weight:600;font-family:'JetBrains Mono',monospace;">{{ item.late }}</td>
+          <td style="color:var(--danger);font-weight:600;font-family:'JetBrains Mono',monospace;">{{ item.absent }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="flex:1;height:6px;background:var(--bg3);border-radius:3px;min-width:80px;">
+                <div style="width:{{ item.percentage }}%;height:100%;border-radius:3px;background:{% if item.percentage >= 75 %}var(--accent3){% elif item.percentage >= 50 %}var(--warn){% else %}var(--danger){% endif %};"></div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13px;
+                color:{% if item.percentage >= 75 %}var(--accent3){% elif item.percentage >= 50 %}var(--warn){% else %}var(--danger){% endif %};">
+                {{ item.percentage }}%
+              </span>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Koi data nahi mila</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
