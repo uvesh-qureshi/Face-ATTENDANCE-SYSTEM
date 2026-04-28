@@ -91,16 +91,11 @@ face_attendance/
 | `/reports/` | Reports |
 | `/admin/` | Admin Panel |
 
-## ⚙️ Late Time Change Karna
-`views.py` me `mark_attendance()` function me:
-```python
-status = 'late' if now.hour >= 9 else 'present'
-#                           ↑ yahan time badlo (24hr format)
-```
+
 
 ## 👨‍💻 Tech Stack
 - **Backend:** Django 4.2
 - **Face Recognition:** face_recognition (dlib)
 - **Camera:** OpenCV + Browser WebRTC
-- **Database:** SQLite (production me PostgreSQL use karo)
+- **Database:** SQLite (production me PostgreSQL use kya)
 - **Frontend:** HTML/CSS/JS (no framework)
